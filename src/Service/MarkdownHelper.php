@@ -10,6 +10,7 @@ namespace App\Service;
 
 
 use Knp\Bundle\MarkdownBundle\MarkdownParserInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 
 class MarkdownHelper
@@ -23,10 +24,17 @@ class MarkdownHelper
      * @var AdapterInterface
      */
     protected $cache;
-    public function __construct(MarkdownParserInterface $markdown, AdapterInterface $cache)
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    public function __construct(MarkdownParserInterface $markdown, AdapterInterface $cache, LoggerInterface $markdownLogger)
     {
         $this->markdown = $markdown;
         $this->cache = $cache;
+        $this->logger = $markdownLogger;
     }
 
     /**
@@ -35,6 +43,7 @@ class MarkdownHelper
      */
     public function parse(string $articleContent): string
     {
+        $this->logger->info('this is some log');
         $item = $this->cache->getItem('markdown_' . md5($articleContent));
         if (!$item->isHit()) {
             $item->set($this->markdown->transform($articleContent));

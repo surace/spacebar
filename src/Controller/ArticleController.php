@@ -9,7 +9,7 @@
 namespace App\Controller;
 
 use App\Service\MarkdownHelper;
-use Michelf\MarkdownInterface;
+use Nexy\Slack\Client as Slack;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -18,6 +18,16 @@ use Symfony\Component\HttpFoundation\Response;
 
 class ArticleController extends AbstractController
 {
+
+    /**
+     * @var bool
+     */
+    private $isDebug;
+
+    function __construct(bool $isDebug)
+    {
+        $this->isDebug = $isDebug;
+    }
 
     /**
      * @Route("/", name="app_homepage")
@@ -31,10 +41,10 @@ class ArticleController extends AbstractController
     /**
      * @Route("/news/{slug}", name="article_show")
      * @param $slug
-     * @param MarkdownInterface $markdown
+     * @param MarkdownHelper $markdownHelper
      * @return Response
      */
-    public function show($slug, MarkdownHelper $markdownHelper)
+    public function show($slug, MarkdownHelper $markdownHelper, Slack $slack)
     {
         $comments = [
             'this is first comment',
@@ -57,6 +67,15 @@ strip steak pork belly aliquip capicola officia. Labore deserunt esse chicken lo
 cow est ribeye adipisicing. Pig hamburger pork belly enim. Do porchetta minim capicola irure pancetta chuck
 fugiat.
 EOF;
+        if($slug == 'hellow'){
+            $message = $slack->createMessage()
+                ->to('#spacebar')
+                ->from('John Doe')
+                ->withIcon(':ghost:')
+                ->setText('This is an amazing message hellow!')
+            ;
+            $slack->sendMessage($message);
+        }
         $articleContent = $markdownHelper->parse($articleContent);
         return $this->render('article/show.html.twig', [
             'title' => ucwords(str_replace('-', ' ', $slug)),
