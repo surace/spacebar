@@ -9,6 +9,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Repository\ArticleRepository;
 use App\Service\MarkdownHelper;
 use App\Service\SlackClient;
 use Doctrine\ORM\EntityManagerInterface;
@@ -32,35 +33,32 @@ class ArticleController extends AbstractController
     }
 
     /**
+     * @param ArticleRepository $repository
      * @Route("/", name="app_homepage")
      * @return Response
      */
-    public function homepage(): Response
+    public function homepage(ArticleRepository $repository ): Response
     {
-        return $this->render('article/homepage.html.twig');
+        $articles = $repository->findAllPublished();
+        return $this->render('article/homepage.html.twig', [
+            'articles' => $articles
+        ]);
     }
 
     /**
      * @Route("/news/{slug}", name="article_show")
-     * @param $slug
-     * @param MarkdownHelper $markdownHelper
+     * @param Article $article
+     * @param SlackClient $slackClient
      * @return Response
      */
-    public function show($slug, SlackClient $slackClient, EntityManagerInterface $em)
+    public function show(Article $article, SlackClient $slackClient)
     {
-        $repository = $em->getRepository(Article::class);
-        $article = $repository->findOneBy(['slug' => $slug]);
         $comments = [
             'this is first comment',
             'this is second comment',
             'this is third comment'
         ];
-        if(!$article){
-            throw $this->createNotFoundException(
-                sprintf('Article not found with slug "%s"', $slug)
-            );
-        }
-        if($slug == 'hellow'){
+        if($article->getSlug() == 'hellow'){
             $slackClient->sendMessage('suresh', 'i am amazing');
         }
         return $this->render('article/show.html.twig', [
@@ -74,10 +72,12 @@ class ArticleController extends AbstractController
      * @Route("news/{slug}/heart", name="article_toggle_heart", methods={"POST"})
      * @return Response
      */
-    public function toggleHeart($slug, LoggerInterface $logger)
+    public function toggleHeart(Article $article, LoggerInterface $logger, EntityManagerInterface $em)
     {
-        $logger->info(sprintf('This slug %s is being hearted', $slug));
-        return new JsonResponse(['hearts' => rand(0, 100)]);
+        $logger->info(sprintf('This slug %s is being hearted', $article->getSlug()));
+        $article->increamentHearCount();
+        $em->flush();
+        return new JsonResponse(['hearts' => $article->getHeartCount()]);
     }
 
 }

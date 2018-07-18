@@ -36,6 +36,21 @@ class Article
      */
     private $publishedAt;
 
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $creator;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $heartCount = 0;
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $imageFilename;
+
     public function getId()
     {
         return $this->id;
@@ -86,6 +101,53 @@ class Article
     {
         $this->publishedAt = $publishedAt;
 
+        return $this;
+    }
+
+    public function getCreator(): ?string
+    {
+        return $this->creator;
+    }
+
+    public function setCreator(string $creator): self
+    {
+        $this->creator = $creator;
+
+        return $this;
+    }
+
+    public function getHeartCount(): ?int
+    {
+        return $this->heartCount;
+    }
+
+    public function setHeartCount(int $heartCount): self
+    {
+        $this->heartCount = $heartCount;
+
+        return $this;
+    }
+
+    public function getImageFilename(): ?string
+    {
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getImagePath()
+    {
+        return 'images/'.$this->imageFilename;
+    }
+
+    public function increamentHearCount(): self
+    {
+        $this->heartCount = $this->heartCount + 1;
         return $this;
     }
 }
