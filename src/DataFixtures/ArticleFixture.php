@@ -7,6 +7,17 @@ use Doctrine\Common\Persistence\ObjectManager;
 
 class ArticleFixture extends BaseFixture
 {
+    private static $articleImages = [
+        'asteroid.jpeg',
+        'mercury.jpeg',
+        'lightspeed.png',
+    ];
+
+    private static $articleAuthors = [
+        'Mike Ferengi',
+        'Amy Oort',
+    ];
+
     public function loadData(ObjectManager $manager)
     {
         $this->createMany(Article::class, 10, function(Article $article, $count) {
@@ -26,16 +37,15 @@ strip steak pork belly aliquip capicola officia. Labore deserunt esse chicken lo
 cow est ribeye adipisicing. Pig hamburger pork belly enim. Do porchetta minim capicola irure pancetta chuck
 fugiat.
 EOF;
-            $article->setTitle('This is it')
-                ->setSlug('this-is-it-' . $count)
+            $article->setTitle($this->faker->sentence)
                 ->setContent($articleContent)
-                ->setCreator('Suresh Katwal')
-                ->setHeartCount(rand(2, 10))
-                ->setImageFilename('asteroid.jpeg');
-            if (rand(1, 10) > 3) {
-                $article->setPublishedAt(new \DateTime(
-                    sprintf('-%d days', rand(1, 5))
-                ));
+                ->setCreator($this->faker->randomElement(self::$articleAuthors))
+                ->setHeartCount($this->faker->numberBetween(5, 100))
+                ->setImageFilename($this->faker->randomElement(self::$articleImages));
+            if ($this->faker->boolean(70)) {
+                $article->setPublishedAt(
+                    $this->faker->dateTimeBetween('-100 days', '-1 day')
+                );
             }
         });
         $manager->flush();
