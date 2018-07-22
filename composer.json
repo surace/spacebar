@@ -18,7 +18,8 @@
         "symfony/lts": "^4@dev",
         "symfony/orm-pack": "^1.0",
         "symfony/twig-bundle": "^4.1",
-        "symfony/yaml": "^4.1"
+        "symfony/yaml": "^4.1",
+        "twig/extensions": "^1.5"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.0",
