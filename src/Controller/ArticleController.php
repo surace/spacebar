@@ -53,17 +53,11 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article, SlackClient $slackClient)
     {
-        $comments = [
-            'this is first comment',
-            'this is second comment',
-            'this is third comment'
-        ];
         if($article->getSlug() == 'hellow'){
             $slackClient->sendMessage('suresh', 'i am amazing');
         }
         return $this->render('article/show.html.twig', [
-            'article' => $article,
-            'comments' => $comments
+            'article' => $article
         ]);
     }
 
