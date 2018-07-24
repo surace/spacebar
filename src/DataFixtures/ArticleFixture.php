@@ -4,9 +4,11 @@ namespace App\DataFixtures;
 
 use App\Entity\Article;
 use App\Entity\Comment;
+use App\Entity\Tag;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class ArticleFixture extends BaseFixture
+class ArticleFixture extends BaseFixture implements DependentFixtureInterface
 {
     private static $articleImages = [
         'asteroid.jpeg',
@@ -21,7 +23,7 @@ class ArticleFixture extends BaseFixture
 
     public function loadData(ObjectManager $manager)
     {
-        $this->createMany(Article::class, 10, function(Article $article, $count)  use ($manager){
+        $this->createMany(Article::class, 10, function (Article $article, $count) use ($manager) {
             $articleContent = <<<EOF
 Spicy **jalapeno bacon** ipsum dolor amet veniam shank in dolore. Ham hock nisi landjaeger cow,
 lorem proident [beef ribs](https://baconipsum.com/) aute enim veniam ut cillum pork chuck picanha. Dolore reprehenderit
@@ -49,9 +51,27 @@ EOF;
                 );
             }
 
-
+            /** @var Tag[] $tags */
+            $tags = $this->getRandomReferences(Tag::class,
+                $this->faker->numberBetween(0, 5));
+            foreach ($tags as $tag){
+                $article->addTag($tag);
+            }
 
         });
         $manager->flush();
+    }
+
+    /**
+     * This method must return an array of fixtures classes
+     * on which the implementing class depends on
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return [
+            TagFixture::class
+        ];
     }
 }

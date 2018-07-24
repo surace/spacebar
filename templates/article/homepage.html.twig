@@ -30,6 +30,13 @@
                             <span class="pl-5 article-details float-right">
                                 {{ article.publishedAt ? article.publishedAt | ago }}
                             </span>
+                            <br>
+                            <small>
+                                {% for tag in article.tags %}
+                                    <span class="badge badge-light">{{ tag.name }}</span>
+
+                                {% endfor %}
+                            </small>
                         </div>
                     </a>
                 </div>

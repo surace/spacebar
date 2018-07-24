@@ -27,6 +27,8 @@ class ArticleRepository extends ServiceEntityRepository
     public function findAllPublished()
     {
         return $this->addIsPublishedQuery()
+            ->leftJoin('a.tags', 't')
+            ->addSelect('t')
             ->orderBy('a.publishedAt', 'DESC')
             ->getQuery()
             ->getResult();
