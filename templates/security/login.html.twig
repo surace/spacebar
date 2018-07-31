@@ -1,0 +1,33 @@
+{% extends 'content_base.html.twig' %}
+
+{% block title %}Manage Comments{% endblock %}
+{% block content_class %}
+    {{ parent() }} show-article-container-border-green
+{% endblock %}
+{% block content_body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Login!</h1>
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error.messageKey|trans(error.messageData, 'security') }}
+                    </div>
+                {% endif %}
+                <form name="login" method="post">
+                    <div class="form-group">
+                        <label for="login__username" class="form-control-label required">Username</label>
+                        <input type="text" id="login__username" name="_username" required="required" class="form-control" value="{{ last_username }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="login__password" class="form-control-label required">Password</label>
+                        <input type="password" id="login__password" name="_password" required="required" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-success">Login <span class="fa fa-lock"></span></button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
